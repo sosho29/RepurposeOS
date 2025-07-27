@@ -1,27 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>RepurposeOS</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RepurposeOS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <header>
-        <h1>Welcome to RepurposeOS</h1>
-        <p>The Creator’s AI-Powered Content Repurposing Tool</p>
-    </header>
+<body class="bg-gray-100 text-gray-800">
+  <div class="max-w-3xl mx-auto p-6 mt-10 bg-white rounded-2xl shadow-lg">
+    <h1 class="text-3xl font-bold text-center mb-4">🚀 RepurposeOS</h1>
+    <p class="text-center text-gray-600 mb-6">Turn one piece of content into a social media engine</p>
 
-    <section>
-        <h2>Why RepurposeOS?</h2>
-        <ul>
-            <li>Save 10+ hours weekly</li>
-            <li>Auto-rewrite content for Instagram, YouTube & Twitter</li>
-            <li>Powered by GPT-4</li>
-        </ul>
-    </section>
+    <label class="block text-sm font-medium text-gray-700 mb-1">Original Content (text, video link, etc)</label>
+    <textarea id="inputContent" rows="6" class="w-full p-3 border rounded-xl mb-4" placeholder="Paste your blog, YouTube link, podcast transcript..."></textarea>
 
-    <footer>
-        <p>Built with 💻 by YOU</p>
-    </footer>
+    <label class="block text-sm font-medium text-gray-700 mb-2">Select Platforms</label>
+    <div class="flex flex-wrap gap-3 mb-6">
+      <label><input type="checkbox" class="platform" value="Instagram Reel"> Instagram Reel</label>
+      <label><input type="checkbox" class="platform" value="Tweet Thread"> Tweet Thread</label>
+      <label><input type="checkbox" class="platform" value="LinkedIn Post"> LinkedIn Post</label>
+      <label><input type="checkbox" class="platform" value="Newsletter"> Newsletter</label>
+      <label><input type="checkbox" class="platform" value="Carousel"> Carousel</label>
+    </div>
+
+    <button onclick="repurpose()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-lg font-semibold">✨ Repurpose</button>
+
+    <div id="output" class="mt-8 space-y-6"></div>
+  </div>
+
+  <script>
+    function repurpose() {
+      const content = document.getElementById("inputContent").value.trim();
+      const platforms = Array.from(document.querySelectorAll(".platform:checked")).map(p => p.value);
+      const outputDiv = document.getElementById("output");
+      outputDiv.innerHTML = "";
+
+      if (!content || platforms.length === 0) {
+        outputDiv.innerHTML = `<div class="text-red-500">Please enter content and select at least one platform.</div>`;
+        return;
+      }
+
+      platforms.forEach(platform => {
+        const fakeOutput = `🔁 <strong>${platform}:</strong><br>“${content.slice(0, 80)}...” repurposed into a ${platform}.`;
+        const div = document.createElement("div");
+        div.className = "bg-gray-50 border-l-4 border-blue-500 p-4 rounded-xl shadow-sm";
+        div.innerHTML = fakeOutput;
+        outputDiv.appendChild(div);
+      });
+    }
+  </script>
 </body>
 </html>
