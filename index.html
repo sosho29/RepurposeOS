@@ -2,51 +2,53 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RepurposeOS</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RepurposeOS – GPT Assistant</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+    textarea, input { width: 100%; padding: 10px; margin: 10px 0; }
+    button { padding: 10px 20px; background-color: #0055ff; color: white; border: none; cursor: pointer; }
+    #response { white-space: pre-wrap; margin-top: 20px; background: white; padding: 15px; border-radius: 5px; }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
-  <div class="max-w-3xl mx-auto p-6 mt-10 bg-white rounded-2xl shadow-lg">
-    <h1 class="text-3xl font-bold text-center mb-4">🚀 RepurposeOS</h1>
-    <p class="text-center text-gray-600 mb-6">Turn one piece of content into a social media engine</p>
-
-    <label class="block text-sm font-medium text-gray-700 mb-1">Original Content (text, video link, etc)</label>
-    <textarea id="inputContent" rows="6" class="w-full p-3 border rounded-xl mb-4" placeholder="Paste your blog, YouTube link, podcast transcript..."></textarea>
-
-    <label class="block text-sm font-medium text-gray-700 mb-2">Select Platforms</label>
-    <div class="flex flex-wrap gap-3 mb-6">
-      <label><input type="checkbox" class="platform" value="Instagram Reel"> Instagram Reel</label>
-      <label><input type="checkbox" class="platform" value="Tweet Thread"> Tweet Thread</label>
-      <label><input type="checkbox" class="platform" value="LinkedIn Post"> LinkedIn Post</label>
-      <label><input type="checkbox" class="platform" value="Newsletter"> Newsletter</label>
-      <label><input type="checkbox" class="platform" value="Carousel"> Carousel</label>
-    </div>
-
-    <button onclick="repurpose()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-lg font-semibold">✨ Repurpose</button>
-
-    <div id="output" class="mt-8 space-y-6"></div>
-  </div>
+<body>
+  <h1>RepurposeOS GPT Assistant</h1>
+  <textarea id="userInput" rows="6" placeholder="Type your content or request..."></textarea>
+  <button onclick="askGPT()">Submit</button>
+  <div id="response"></div>
 
   <script>
-    function repurpose() {
-      const content = document.getElementById("inputContent").value.trim();
-      const platforms = Array.from(document.querySelectorAll(".platform:checked")).map(p => p.value);
-      const outputDiv = document.getElementById("output");
-      outputDiv.innerHTML = "";
+    async function askGPT() {
+      const prompt = document.getElementById("userInput").value;
+      const resBox = document.getElementById("response");
+      resBox.textContent = "Thinking...";
 
-      if (!content || platforms.length === 0) {
-        outputDiv.innerHTML = `<div class="text-red-500">Please enter content and select at least one platform.</div>`;
-        return;
+      try {
+        const res = await fetch("https://openai-proxy.shouryanaik12.workers.dev/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            messages: [
+              { role: "system", content: "You are a helpful AI assistant." },
+              { role: "user", content: prompt }
+            ],
+            model: "gpt-3.5-turbo"
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.choices && data.choices.length > 0) {
+          resBox.textContent = data.choices[0].message.content;
+        } else {
+          resBox.textContent = "No response from GPT.";
+        }
+      } catch (err) {
+        console.error(err);
+        resBox.textContent = "Error connecting to GPT: " + err.message;
       }
-
-      platforms.forEach(platform => {
-        const fakeOutput = `🔁 <strong>${platform}:</strong><br>“${content.slice(0, 80)}...” repurposed into a ${platform}.`;
-        const div = document.createElement("div");
-        div.className = "bg-gray-50 border-l-4 border-blue-500 p-4 rounded-xl shadow-sm";
-        div.innerHTML = fakeOutput;
-        outputDiv.appendChild(div);
-      });
     }
   </script>
 </body>
